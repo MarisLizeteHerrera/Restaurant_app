@@ -5,23 +5,31 @@ import './App.css';
 import Menus from './components/Menus';
 // import MenuForm from './components/MenuForm';
 import { Container, } from "semantic-ui-react";
+import axios from "axios"
 
 class App extends Component {
-    state = { menus: [
-      { id: 1, name: "Breakfast" },
-      { id: 2, name: "Lunch" },
-      { id: 3, name: "Dinner" },
-      { id: 4, name: "Snacks" },
-    ], }
-  
-    componentDidMount() {
-      // TODO make a call to our rails server to get Items
+    state = { 
+      menus: [],
     }
   
-    // addItem = (name) => {
-    //   // TODO make api call to rails server to add item
-    //   // TODO update state
-    // }
+    componentDidMount() {
+      axios.get(`/api/menus`)
+      .then(res => {
+        console.log(res.data);
+        this.setState({ menus: res.data })  
+      }).catch(err => {
+        console.log(err)
+      });
+    }
+
+  
+    addItem = (name) => {
+      axios.post('/api/menus', { name, })
+      .then( res => {
+      const { menus } = this.state;
+      this.setState({ menus: [...menus, res.data] });
+      })
+    }
   
     // updateTodo = (id) => {
     //   // TODO make api call to update todo
@@ -41,6 +49,8 @@ class App extends Component {
           <br />
           <Menus
             menus={this.state.menus}
+            // updateMenu={this.updateMenu}
+            // deleteMenu={this.deleteMenu}
           />
         </Container>
       );
